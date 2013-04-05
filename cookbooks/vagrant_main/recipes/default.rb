@@ -109,8 +109,8 @@ end
 execute "mongodb new user" do
   command "mkdir -p ~/data/db"
   command "sudo chown -R vagrant:vagrant /var/log/mongodb/mongodb.log"
-  command "sudo mongod --fork --logpath /var/log/mongodb/mongodb.log --logappend --smallfiles --journal --dbpath /home/vagrant/data/db"
-  command "mongo localhost/techtravel --quiet --eval 'db.addUser(\"techtravel\", \"mvdbt9\")'"
+  command "sudo mongod --fork --logpath /var/log/mongodb/mongodb.log"
+  command "mongo techtravel --quiet --eval 'db.addUser(\"techtravel\", \"mvdbt9\");'"
 end
 
 execute "install bson_ext" do
