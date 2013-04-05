@@ -1,0 +1,15 @@
+{
+    "id": "techtravel",
+    "host": "techtravel",
+    "docroot": "/var/www/techtravel/public",
+    "aliases": [
+        "*.techtravel"
+    ],
+    "host_aliases": [
+        "default.techtravel",
+        "test.techtravel",
+        "user1.techtravel",
+        "user2.techtravel",
+        "labs.techtravel"
+    ]
+}
