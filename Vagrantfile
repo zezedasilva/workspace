@@ -7,12 +7,12 @@ Vagrant.configure("2") do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "precise32"
+  config.vm.box = "precise64"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  # config.vm.box_url = "http://domain.com/path/to/above.box"
-  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  #config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -32,8 +32,10 @@ Vagrant.configure("2") do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
+#  config.vm.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   # config.vm.synced_folder "../data", "/vagrant_data"
   config.vm.synced_folder "~/Sites", "/var/www"
+#  config.vm.synced_folder "~/Dev/etc/codesniffer", "/usr/share/php/PHP/CodeSniffer"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -41,7 +43,7 @@ Vagrant.configure("2") do |config|
   #
   # config.vm.provider :virtualbox do |vb|
   #   # Don't boot with headless mode
-  #   vb.gui = true
+    # vb.gui = true
   #
   #   # Use VBoxManage to customize the VM. For example to change memory:
   #   vb.customize ["modifyvm", :id, "--memory", "1024"]

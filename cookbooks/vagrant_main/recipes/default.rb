@@ -24,7 +24,7 @@ include_recipe "apache2::mod_php5"
 include_recipe "apache2::mod_rewrite"
 # include_recipe "apache2::mod_proxy"
 # include_recipe "apache2::mod_proxy_http"
-include_recipe "apache2::mod_ssl"
+# include_recipe "apache2::mod_ssl"
 include_recipe "apache2::mod_headers"
 include_recipe "apache2::mod_mime"
 include_recipe "apache2::mod_setenvif"
@@ -54,6 +54,10 @@ template "/etc/php5/apache2/php.ini" do
   group "root"
   mode "0644"
 end
+
+# execute "php stable ppas" do
+  # command "sudo add-apt-repository ppa:ondrej/php5"
+# end
 
 execute "php-pear: upgrade pear" do
   command "sudo pear upgrade pear"
@@ -88,7 +92,6 @@ packages.each do |package|
 end
 end
 
-
 execute "php-pear: upgrade all packages" do
   command "sudo pear upgrade-all"
   returns [0,1]
@@ -109,7 +112,7 @@ end
 execute "mongodb new user" do
   command "mkdir -p ~/data/db"
   command "sudo chown -R vagrant:vagrant /var/log/mongodb/mongodb.log"
-  command "sudo mongod --fork --logpath /var/log/mongodb/mongodb.log"
+  command "sudo mongod --logpath /var/log/mongodb/mongodb.log"
   command "mongo techtravel --quiet --eval 'db.addUser(\"techtravel\", \"mvdbt9\");'"
 end
 
@@ -138,7 +141,7 @@ end
 
 #install less parser
 # nodejs_npm "less" do
-#   action :install
+  # action :install
 # end
 
 gem_package "mysql"

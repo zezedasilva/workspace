@@ -14,4 +14,9 @@ deb-src <%= node['ubuntu']['archive_url'] %> <%= @code_name %>-updates main rest
 deb <%= node['ubuntu']['security_url'] %> <%= @code_name %>-security main restricted universe multiverse
 deb-src <%= node['ubuntu']['security_url'] %> <%= @code_name %>-security main restricted universe multiverse
 
+# mongo
 deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen
+
+# php last stable
+#deb http://ppa.launchpad.net/ondrej/php5/ubuntu precise main 
+#deb-src http://ppa.launchpad.net/ondrej/php5/ubuntu precise main 
