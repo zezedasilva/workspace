@@ -250,6 +250,6 @@ execute "a2enmod rewrite" do
   ignore_failure true
 end
 
-service "apache2" do
-  action :start
-end
+# service "apache2" do
+  # action :start
+# end
