@@ -24,16 +24,16 @@ include_recipe "apache2::mod_php5"
 include_recipe "apache2::mod_rewrite"
 # include_recipe "apache2::mod_proxy"
 # include_recipe "apache2::mod_proxy_http"
-# include_recipe "apache2::mod_ssl"
+include_recipe "apache2::mod_ssl"
 include_recipe "apache2::mod_headers"
 include_recipe "apache2::mod_mime"
 include_recipe "apache2::mod_setenvif"
 # include_recipe "apache2::mod_fcgid"
-# include_recipe "apache2::mod_expires"
+include_recipe "apache2::mod_expires"
 include_recipe "apache2::mod_env"
 include_recipe "apache2::mod_dir"
-include_recipe "apache2::mod_deflate"
-# include_recipe "apache2::mod_autoindex"
+# include_recipe "apache2::mod_deflate"
+include_recipe "apache2::mod_autoindex"
 include_recipe "apache2::mod_alias"
 include_recipe "memcached"
  include_recipe "git"
@@ -58,6 +58,55 @@ end
 # execute "php stable ppas" do
   # command "sudo add-apt-repository ppa:ondrej/php5"
 # end
+
+ execute "install ruby" do
+  command "sudo apt-get install ruby-full rubygems1.8"
+  returns [0,1]
+end
+
+execute "install sass compass" do
+  command "sudo gem install sass compass"
+  returns [0,1]
+end
+
+execute "node" do
+  command "sudo npm install -g n"
+end
+
+execute "install node" do
+  command "sudo n stable"
+end
+
+execute "install bower" do
+  command "sudo npm install -g bower"
+end
+
+execute "install yo" do
+  command "sudo npm install -g yo"
+end
+
+execute "install generator-generator" do
+  command "sudo npm install -g generator-generator"
+end
+
+execute "install generator-webapp" do
+  command "sudo npm install -g generator-webapp"
+end
+
+execute "install generator-laravel" do
+  command "sudo npm install -g generator-laravel"
+end
+
+execute "install genghisapp" do
+  command "sudo gem install genghisapp"
+  returns [0,1]
+end
+
+
+execute "install composer" do
+  command "curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/bin"
+  returns [0,1]
+end
 
 execute "php-pear: upgrade pear" do
   command "sudo pear upgrade pear"
