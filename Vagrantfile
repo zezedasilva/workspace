@@ -41,13 +41,13 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider :virtualbox do |vb|
+   #config.vm.provider :virtualbox do |vb|
   #   # Don't boot with headless mode
-    # vb.gui = true
+   #vb.gui = true
   #
   #   # Use VBoxManage to customize the VM. For example to change memory:
-  #   vb.customize ["modifyvm", :id, "--memory", "1024"]
-  # end
+    # vb.customize ["modifyvm", :id, "--memory", "512"]
+   #end
   #
   # View the documentation for the provider you're using for more
   # information on available options.
@@ -90,7 +90,7 @@ Vagrant.configure("2") do |config|
   #   chef.json = { :mysql_password => "foo" }
   # end
 
-  config.vm.provision :shell, :inline => "apt-get update --fix-missing "
+  # config.vm.provision :shell, :inline => "apt-get update --fix-missing "
 
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "cookbooks"
@@ -132,20 +132,3 @@ Vagrant.configure("2") do |config|
   #
   #   chef.validation_client_name = "ORGNAME-validator"
 end
-
-# set_unless[:php_pear][:packages] = ["PHPDocumentor \ PHP_CodeSniffer \ zend/zend \ phpmd/PHP_PMD phpunit/phpcpd phpunit/phploc \ pear/Text_Highlighter-beta \ phpunit/ppw --alldeps phpunit/PHP_CodeBrowser \ pear/HTTP_Request2-beta \ phpunit/PHPUnit_Selenium \ --alldeps phpunit/PHPUnit \ phpunit/PHPUnit_Selenium \ docBlox/DocBlox-beta \ --nodeps MDB2_Driver_mssql; "]
-##instalando apenas o necessário por enquanto...
-                                    # ,"pear.phpundercontrol.org",
-                                    # ,"pear.michelf.com"
-                                    # ,"pear.docblox-project.org"
-                                    # ,"zend.googlecode.com/svn"
-                                    # ,"pear.behat.org"
-                                     # "zend/zend",
-                                     # "pear.doctrine-project.org/DoctrineDBAL-2.3.0",
-                                     # "phpmd/PHP_PMD phpunit/phpcpd phpunit/phploc",
-                                     # "pear/Text_Highlighter-beta",
-                                      # "--alldeps phpunit/PHP_CodeBrowser",
-                                     # "pear/HTTP_Request2-beta",
-                                     # "phpunit/PHPUnit_Selenium",
-                                    # "PHPDocumentor",
-                                     # "docBlox/DocBlox-beta",

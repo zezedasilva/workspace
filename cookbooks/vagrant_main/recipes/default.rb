@@ -38,13 +38,13 @@ include_recipe "apache2::mod_alias"
 include_recipe "memcached"
  include_recipe "git"
 # include_recipe "aws"
-include_recipe "vim"
+# include_recipe "vim"
 # include_recipe "ssh_keys"
 include_recipe "bashrc"
 # include_recipe "imagemagick"
 # include_recipe "database"
 # include_recipe "hosts"
-include_recipe "htop"
+# include_recipe "htop"
 # include_recipe "emacs"
 
 # apply apaches php.ini template
@@ -59,49 +59,62 @@ end
   # command "sudo add-apt-repository ppa:ondrej/php5"
 # end
 
- execute "install ruby" do
-  command "sudo apt-get install ruby-full rubygems1.8"
+execute "install ruby" do
+  command "sudo apt-get install ruby-full"
   returns [0,1]
+   ignore_failure true
 end
 
-execute "install sass compass" do
-  command "sudo gem install sass compass"
+execute "install rubygems" do
+  command "sudo apt-get install rubygems1.8"
   returns [0,1]
+  ignore_failure true
 end
+
+# execute "install sass compass" do
+#   command "sudo gem install sass compass"
+#   returns [0,1]
+# end
 
 execute "node" do
   command "sudo npm install -g n"
+  returns [0,1]
 end
 
-execute "install node" do
-  command "sudo n stable"
-end
+# execute "install node" do
+#   command "sudo n stable"
+# end
 
 execute "install bower" do
   command "sudo npm install -g bower"
+  returns [0,1]
 end
 
-execute "install yo" do
-  command "sudo npm install -g yo"
-end
+# execute "install yo" do
+  # command "sudo npm install -g yo"
+# end
 
-execute "install generator-generator" do
-  command "sudo npm install -g generator-generator"
-end
+# execute "install generator-generator" do
+  # command "sudo npm install -g generator-generator"
+# end
 
-execute "install generator-webapp" do
-  command "sudo npm install -g generator-webapp"
-end
+# execute "install generator-webapp" do
+  # command "sudo npm install -g generator-webapp"
+# end
 
-execute "install generator-laravel" do
-  command "sudo npm install -g generator-laravel"
-end
+# execute "install generator-laravel" do
+  # command "sudo npm install -g generator-laravel"
+# end
 
 execute "install genghisapp" do
   command "sudo gem install genghisapp"
   returns [0,1]
 end
 
+# execute "execute genghisapp" do
+  # command "genghisapp"
+  # returns [0,1]
+# end
 
 execute "install composer" do
   command "curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/bin"
@@ -127,10 +140,10 @@ channels.each do |channel|
 end
 end
 
-execute "php-pear: update channel" do
-  command "sudo pear channel-update pear.php.net"
-  returns [0,1]
-end
+# execute "php-pear: update channel" do
+#   command "sudo pear channel-update pear.php.net"
+#   returns [0,1]
+# end
 
 packages = node[:php_pear][:packages]
 packages.each do |package|
@@ -141,10 +154,10 @@ packages.each do |package|
 end
 end
 
-execute "php-pear: upgrade all packages" do
-  command "sudo pear upgrade-all"
-  returns [0,1]
-end
+# execute "php-pear: upgrade all packages" do
+#   command "sudo pear upgrade-all"
+#   returns [0,1]
+# end
 
 execute "install mongodb-10gen " do
   command "sudo apt-get install mongodb-10gen"
@@ -162,15 +175,11 @@ execute "mongodb new user" do
   command "mkdir -p ~/data/db"
   command "sudo chown -R vagrant:vagrant /var/log/mongodb/mongodb.log"
   command "sudo mongod --logpath /var/log/mongodb/mongodb.log"
-  command "mongo techtravel --quiet --eval 'db.addUser(\"techtravel\", \"mvdbt9\");'"
+  command "mongo default --quiet --eval 'db.addUser(\"techtravel\", \"mvdbt9\");'"
 end
 
 execute "install bson_ext" do
   command "gem install bson_ext"
-end
-
-execute "install sass" do
-  command "gem install sass"
 end
 
 # gem_package "mongo"
@@ -186,7 +195,6 @@ end
 #     # connection.reload
 #   end
 # end
-
 
 #install less parser
 # nodejs_npm "less" do
