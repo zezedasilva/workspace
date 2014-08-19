@@ -1,139 +1,154 @@
-Description
-===========
+MySQL cookbook
+=====================
 
-Installs and configures MySQL client or server.
+The MySQL cookbook exposes the `mysql_service` and `mysql_client`
+resources. These resources are utilized by the `mysql::client`
+and `mysql::server` recipes, or can be consumed in other recipes by
+depending on the MySQL cookbook.
+
+This cookbook does its best to follow platform native idioms at all
+times. This means things like logs, pid files, sockets, and service
+managers work "as expected" by an administrator familiar with a given
+platform.
+
+Scope
+-----
+This cookbook is concerned with the "MySQL Community Server",
+particularly those shipped with F/OSS Unix and Linux distributions. It
+does not address forks and value-added repackaged MySQL distributions
+like Drizzle, MariaDB, or Percona.
+
+This cookbook does not try to encompass every single configuration
+option available for MySQL. Instead, it provides a "just enough" to
+get a MySQL server running, then allows the user to specify additional
+custom configuration.
 
 Requirements
-============
+------------
+* Chef 11 or higher
+* Ruby 1.9 (preferably from the Chef full-stack installer)
 
-Platform
---------
+Resources / Providers
+---------------------
+### mysql_service
 
-* Debian, Ubuntu
-* CentOS, Red Hat, Fedora
+The `mysql_service` resource configures the basic plumbing
+needed to run a simple mysql_service with a minimal configuration.
 
-Tested on:
+### Example
 
-* Debian 5.0
-* Ubuntu 10.04
-* CentOS 5.5
+    mysql_service 'default' do
+      version '5.1'
+      port '3307'
+      data_dir '/data'
+      template_source 'custom.erb'
+      action :create
+    end
 
-Cookbooks
----------
+The `version` parameter will allow the user to select from the
+versions available for the platform, where applicable. When omitted,
+it will install the default MySQL version for the target platform.
+Available version numbers are `5.0`, `5.1`, `5.5`, and `5.6`,
+depending on platform. See PLATFORMS.md for details.
 
-Requires Opscode's openssl cookbook for secure password generation.
+The `port` parameter determines the listen port for the mysqld
+service. When omitted, it will default to '3306'.
 
-Requires a C compiler and Ruby development package in order to build mysql gem with native extensions. On Debian and Ubuntu systems this is satisfied by installing the "build-essential" and "ruby-dev" packages before running Chef. See USAGE below for information on how to handle this during a Chef run.
+The `data_dir` parameter determines where the actual data files are
+kept on the machine. This is useful when mounting external storage.
+When omitted, it will default to the platform's native location.
 
-Resources and Providers
-=======================
+The `template_source` parameter allows the user to override the
+default minimal template used by the `mysql_service` resource. When
+omitted, it will select one shipped with the cookbook based on the
+MySQL version.
 
-The LWRP that used to ship as part of this cookbook has been refactored into the [database](https://github.com/opscode/cookbooks/tree/master/database) cookbook.  Please see the README for details on updated usage.
+### mysql_client
 
-Attributes
-==========
+The `mysql_client` resource installs or removes the MySQL client binaries and
+development libraries
 
-* `mysql['server_root_password']` - Set the server's root password with this, default is a randomly generated password with `OpenSSL::Random.random_bytes`.
-* `mysql['server_repl_password']` - Set the replication user 'repl' password with this, default is a randomly generated password with `OpenSSL::Random.random_bytes`.
-* `mysql['server_debian_password']` - Set the debian-sys-maint user password with this, default is a randomly generated password with `OpenSSL::Random.random_bytes`.
-* `mysql['bind_address']` - Listen address for MySQLd, default is node's ipaddress.
-* `mysql['data_dir']` - Location for mysql data directory, default is "/var/lib/mysql"
-* `mysql['conf_dir']` - Location for mysql conf directory, default is "/etc/mysql"
-* `mysql['ec2_path']` - location of mysql data_dir on EC2 nodes, default "/mnt/mysql"
+Recipes
+-------
+### mysql::server
 
-Performance tuning attributes, each corresponds to the same-named parameter in my.cnf; default values listed
+This recipe calls a `mysql_service` resource, passing parameters
+from node attributes.
 
-* `mysql['tunable']['key_buffer']`          = "250M"
-* `mysql['tunable']['max_connections']`     = "800"
-* `mysql['tunable']['wait_timeout']`        = "180"
-* `mysql['tunable']['net_write_timeout']`   = "30"
-* `mysql['tunable']['net_write_timeout']`   = "30"
-* `mysql['tunable']['back_log']`            = "128"
-* `mysql['tunable']['table_cache']`         = "128"
-* `mysql['tunable']['max_heap_table_size']` = "32M"
-* `mysql['tunable']['expire_logs_days']`    = "10"
-* `mysql['tunable']['max_binlog_size']`     = "100M"
+### mysql::client
+
+This recipe calls a `mysql_client` resource, with action :create
 
 Usage
-=====
+-----
+The `mysql::server` recipe and `mysql_service` resources are designed to
+provide a minimal configuration. The default `my.cnf` dropped off has
+an `!includedir` directive. Site-specific configuration should be
+placed in the platform's native location.
 
-On client nodes,
+### run_list
 
-    include_recipe "mysql::client"
+Include `'recipe[mysql::server]'` or `'recipe[mysql::client]'` in your run_list.
 
-This will install the MySQL client libraries and development headers on the system. It will also install the Ruby Gem `mysql`, so that the cookbook's LWRP (above) can be used. This is done during the compile-phase of the Chef run. On platforms that are known to have a native package (currently Debian, Ubuntu, Red hat, Centos, Fedora and SUSE), the package will be installed. Other platforms will use the RubyGem.
+### Wrapper cookbook
 
-This creates a resource object for the package and does the installation before other recipes are parsed. You'll need to have the C compiler and such (ie, build-essential on Ubuntu) before running the recipes, but we already do that when installing Chef :-). 
+    node.set['mysql']['server_root_password'] = 'yolo'
+    node.set['mysql']['port'] = '3308'
+    node.set['mysql']['data_dir'] = '/data'
+    
+    include_recipe 'mysql::server'
 
-On server nodes,
+    template '/etc/mysql/conf.d/mysite.cnf' do
+      owner 'mysql'
+      owner 'mysql'      
+      source 'mysite.cnf.erb'
+      notifies :restart, 'mysql_service[default]'
+    end
 
-    include_recipe "mysql::server"
+### Used directly in a recipe
 
-On Debian and Ubuntu, this will preseed the mysql-server package with the randomly generated root password from the attributes file. On other platforms, it simply installs the required packages. It will also create an SQL file, /etc/mysql/grants.sql, that will be used to set up grants for the root, repl and debian-sys-maint users.
+    template '/etc/mysql/conf.d/mysite.cnf' do
+      owner 'mysql'
+      owner 'mysql'      
+      source 'mysite.cnf.erb'
+      notifies :restart, 'mysql_service[default]'
+    end
 
-On EC2 nodes,
+    mysql_service 'default' do
+      version '5.5'
+      port '3307'
+      data_dir '/data'
+      template_source 'custom.erb'
+      action :create
+    end
 
-    include_recipe "mysql::server_ec2"
+Attributes
+----------
 
-When the `ec2_path` doesn't exist we look for a mounted filesystem (eg, EBS) and move the data_dir there.
+    default['mysql']['service_name'] = 'default'
+    default['mysql']['server_root_password'] = 'ilikerandompasswords'
+    default['mysql']['server_debian_password'] = 'postinstallscriptsarestupid'
+    default['mysql']['data_dir'] = '/var/lib/mysql'
+    default['mysql']['port'] = '3306'
 
-The client recipe is already included by server and 'default' recipes.
+    ### used in grants.sql
+    default['mysql']['allow_remote_root'] = false
+    default['mysql']['remove_anonymous_users'] = true
+    default['mysql']['root_network_acl'] = nil
 
-For more infromation on the compile vs execution phase of a Chef run:
+License & Authors
+-----------------
+- Author:: Joshua Timberman (<joshua@opscode.com>)
+- Author:: AJ Christensen (<aj@opscode.com>)
+- Author:: Seth Chisamore (<schisamo@opscode.com>)
+- Author:: Brian Bianco (<brian.bianco@gmail.com>)
+- Author:: Jesse Howarth (<him@jessehowarth.com>)
+- Author:: Andrew Crump (<andrew@kotirisoftware.com>)
+- Author:: Christoph Hartmann (<chris@lollyrock.com>)
+- Author:: Sean OMeara (<someara@opscode.com>)
 
-* http://wiki.opscode.com/display/chef/Anatomy+of+a+Chef+Run
-
-Changes/Roadmap
-===============
-
-### v1.2.2
-
-* [COOK-826] mysql::server recipe doesn't quote password string
-* [COOK-834] Add 'scientific' and 'amazon' platforms to mysql cookbook
-
-### v1.2.1
-
-* [COOK-644] Mysql client cookbook 'package missing' error message is confusing
-* [COOK-645] RHEL6/CentOS6 - mysql cookbook contains 'skip-federated' directive which is unsupported on MySQL 5.1
-
-### v1.2.0
-
-* [COOK-684] remove mysql_database LWRP
-
-### v1.0.8:
-
-* [COOK-633] ensure "cloud" attribute is available
-
-### v1.0.7:
-
-* [COOK-614] expose all mysql tunable settings in config
-* [COOK-617] bind to private IP if available
-
-### v1.0.6:
-
-* [COOK-605] install mysql-client package on ubuntu/debian
-
-### v1.0.5:
-
-* [COOK-465] allow optional remote root connections to mysql
-* [COOK-455] improve platform version handling
-* externalize conf_dir attribute for easier cross platform support
-* change datadir attribute to data_dir for consistency
-
-### v1.0.4:
-
-* fix regressions on debian platform
-* [COOK-578] wrap root password in quotes
-* [COOK-562] expose all tunables in my.cnf
-
-License and Author
-==================
-
-Author:: Joshua Timberman (<joshua@opscode.com>)
-Author:: AJ Christensen (<aj@opscode.com>)
-Author:: Seth Chisamore (<schisamo@opscode.com>)
-
-Copyright:: 2009-2011 Opscode, Inc
+```text
+Copyright:: 2009-2014 Chef Software, Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -146,3 +161,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```

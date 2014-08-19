@@ -2,12 +2,18 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
+  config.vbguest.auto_update = true
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "precise64"
+  # Use vagrant-omnibus to install chef client
+  config.omnibus.chef_version = :latest
+
+  # Enable Berkshelf via vagrant-berkshelf
+  # config.berkshelf.enabled = true
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
@@ -34,20 +40,23 @@ Vagrant.configure("2") do |config|
   # argument is a set of non-required options.
 #  config.vm.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   # config.vm.synced_folder "../data", "/vagrant_data"
-  config.vm.synced_folder "~/Sites", "/var/www"
+  config.vm.synced_folder "~/Sites", "/var/www", owner: 'www-data', group: 'www-data', :mount_options => ['dmode=775', 'fmode=775']
+  config.vm.synced_folder "~/Downloads", "/home/vagrant/Downloads"
+  config.vm.synced_folder "~/Movies", "/home/vagrant/Movies"
+  config.vm.synced_folder "~/Dev", "/home/vagrant/Dev"
 #  config.vm.synced_folder "~/Dev/etc/codesniffer", "/usr/share/php/PHP/CodeSniffer"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider :virtualbox do |vb|
+  config.vm.provider :virtualbox do |vb|
   #   # Don't boot with headless mode
-  # vb.gui = true
+   #vb.gui = true
   #
   #   # Use VBoxManage to customize the VM. For example to change memory:
-  # vb.customize ["modifyvm", :id, "--memory", "512"]
-  # end
+    vb.customize ["modifyvm", :id, "--memory", "512"]
+  end
   #
   # View the documentation for the provider you're using for more
   # information on available options.
@@ -104,7 +113,7 @@ Vagrant.configure("2") do |config|
         :server_root_password => "mvdbt9"
       },
       :apache => {
-        :user => "vagrant"
+        :user => "www-data"
       }
     }
   end
